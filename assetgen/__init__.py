@@ -415,7 +415,7 @@ class AssetGenRunner(object):
         for key in ('prereqs', 'generate'):
 
             listing = config.pop(key, None)
-            if not listing:
+            if listing is None:
                 exit("No value found for %s in %s." % (key, path))
 
             assets = []
