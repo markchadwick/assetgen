@@ -254,8 +254,7 @@ class CSSAsset(Asset):
             for source in self.sources:
                 if isinstance(source, Raw):
                     out(source.text)
-                    continue
-                if source.endswith('.sass'):
+                elif source.endswith('.sass'):
                     cmd = ['sass']
                     if bidi:
                         cmd.append('--flip')
@@ -263,6 +262,8 @@ class CSSAsset(Asset):
                         cmd.extend(['--style', 'compressed'])
                     cmd.append(source)
                     out(do(cmd))
+                else:
+                    [out(l) for l in open(source).readlines()]
             output = ''.join(output)
             if self.embed_path_root and self.embed_url_base:
                 self.emit(
