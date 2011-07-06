@@ -255,7 +255,7 @@ class CSSAsset(Asset):
                 if isinstance(source, Raw):
                     out(source.text)
                     continue
-                if source.endswith('.sass'):
+                elif source.endswith('.sass'):
                     cmd = ['sass']
                     if bidi:
                         cmd.append('--flip')
@@ -263,6 +263,8 @@ class CSSAsset(Asset):
                         cmd.extend(['--style', 'compressed'])
                     cmd.append(source)
                     out(do(cmd))
+                else:
+                  [out(l) for l in open(source).readlines()]
             output = ''.join(output)
             if self.embed_path_root and self.embed_url_base:
                 self.emit(
@@ -322,7 +324,7 @@ class AssetGenRunner(object):
     virgin = True
 
     def __init__(self, path, profile='default', force=None):
-
+        self.manifest_changed = False
         data_dir = join(
             gettempdir(), 'assetgen-%s' % sha1(path).hexdigest()[:12]
             )
@@ -415,7 +417,7 @@ class AssetGenRunner(object):
         for key in ('prereqs', 'generate'):
 
             listing = config.pop(key, None)
-            if not listing:
+            if listing is None:
                 exit("No value found for %s in %s." % (key, path))
 
             assets = []
@@ -558,6 +560,8 @@ class AssetGenRunner(object):
         else:
             print "=> Generated output:", path
         manifest = self.manifest
+        self.manifest_changed = 1
+
         if path in manifest:
             ex_output_path = manifest[path]
             if output_path == ex_output_path:
@@ -567,7 +571,6 @@ class AssetGenRunner(object):
                 remove(ex_path)
                 print ".. Removed stale:", ex_output_path
         manifest[path] = output_path
-        self.manifest_changed = 1
 
     def is_fresh(self, key, depends):
         if self.force:
@@ -624,11 +627,13 @@ class AssetGenRunner(object):
             if not asset.is_fresh():
                 asset.generate()
         manifest_path = self.manifest_path
+
         if manifest_path and self.manifest_changed:
             print "=> Updated manifest:", manifest_path
             manifest_file = open(manifest_path, 'wb')
             encode_json(self.manifest, manifest_file)
             manifest_file.close()
+            self.manifest_changed = False
         data_file = open(self.data_path, 'wb')
         dump(self.data, data_file, 2)
         data_file.close()
