@@ -255,13 +255,19 @@ class CSSAsset(Asset):
                 if isinstance(source, Raw):
                     out(source.text)
                 elif source.endswith('.sass'):
-                    cmd = ['sass']
+                    cmd = ['sass', '--scss']
                     if bidi:
                         cmd.append('--flip')
                     if get_spec('compressed'):
                         cmd.extend(['--style', 'compressed'])
                     cmd.append(source)
                     out(do(cmd))
+
+                elif source.endswith('.less'):
+                    cmd = ['lessc']
+                    cmd.append(source)
+                    out(do(cmd))
+
                 else:
                     [out(l) for l in open(source).readlines()]
             output = ''.join(output)
