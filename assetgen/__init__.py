@@ -297,7 +297,7 @@ class JSAsset(Asset):
             if isinstance(source, Raw):
                 out(source.text)
             elif source.endswith('.coffee'):
-                out(do(['coffee', '-p', '-b', source]))
+                out(do(['coffee', '-p', source]))
             else:
                 out(read(source))
         output = ''.join(output)
