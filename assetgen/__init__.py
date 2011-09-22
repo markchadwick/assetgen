@@ -168,7 +168,10 @@ class BinaryAsset(Asset):
             self.path, ''.join(read(source) for source in self.sources)
             )
 
-register_handler('binary', BinaryAsset)
+register_handler('binary',  BinaryAsset)
+register_handler('html',    BinaryAsset)
+register_handler('png',     BinaryAsset)
+
 
 # ------------------------------------------------------------------------------
 # CSS Assets
@@ -294,6 +297,7 @@ class JSAsset(Asset):
         get_spec = self.spec.get
         output = []; out = output.append
         for source in self.sources:
+            print '   ', source
             if isinstance(source, Raw):
                 out(source.text)
             elif source.endswith('.coffee'):
@@ -745,7 +749,7 @@ def main(argv=None):
         for assetgen in generators:
             assetgen.run()
         if watch:
-            sleep(1)
+            sleep(0.1)
         else:
             break
 
